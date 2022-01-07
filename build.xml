@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- You may freely edit this file. See commented blocks below for -->
+<!-- some examples of how to customize the build. -->
+<!-- (If you delete it and reopen the project it will be recreated.) -->
+<!-- By default, only the Clean and Build commands use this build script. -->
+<!-- Commands such as Run, Debug, and Test only use this build script if -->
+<!-- the Compile on Save feature is turned off for the project. -->
+<!-- You can turn off the Compile on Save (or Deploy on Save) setting -->
+<!-- in the project's Project Properties dialog box.-->
+<project name="BatteryInfo" default="default" basedir=".">
+    <description>Builds, tests, and runs the project BatteryInfo.</description>
+    <import file="nbproject/build-impl.xml"/>
+    <!--
+
+    There exist several targets which are by default empty and which can be 
+    used for execution of your tasks. These targets are usually executed 
+    before and after some main targets. They are: 
+
+      -pre-init:                 called before initialization of project properties
+      -post-init:                called after initialization of project properties
+      -pre-compile:              called before javac compilation
+      -post-compile:             called after javac compilation
+      -pre-compile-single:       called before javac compilation of single file
+      -post-compile-single:      called after javac compilation of single file
+      -pre-compile-test:         called before javac compilation of JUnit tests
+      -post-compile-test:        called after javac compilation of JUnit tests
+      -pre-compile-test-single:  called before javac compilation of single JUnit test
+      -post-compile-test-single: called after javac compilation of single JUunit test
+      -pre-jar:                  called before JAR building
+      -post-jar:                 called after JAR building
+      -post-clean:               called after cleaning build products
+
+    (Targets beginning with '-' are not intended to be called on their own.)
+
+    Example of inserting an obfuscator after compilation could look like this:
+
+        <target name="-post-compile">
+            <obfuscate>
+                <fileset dir="${build.classes.dir}"/>
+            </obfuscate>
+        </target>
+
+    For list of available properties check the imported 
+    nbproject/build-impl.xml file. 
+
+
+    Another way to customize the build is by overriding existing main targets.
+    The targets of interest are: 
+
+      -init-macrodef-javac:     defines macro for javac compilation
+      -init-macrodef-junit:     defines macro for junit execution
+      -init-macrodef-debug:     defines macro for class debugging
+      -init-macrodef-java:      defines macro for class execution
+      -do-jar:                  JAR building
+      run:                      execution of project 
+      -javadoc-build:           Javadoc generation
+      test-report:              JUnit report generation
+
+    An example of overriding the target for project execution could look like this:
+
+        <target name="run" depends="BatteryInfo-impl.jar">
+            <exec dir="bin" executable="launcher.exe">
+                <arg file="${dist.jar}"/>
+            </exec>
+        </target>
+
+    Notice that the overridden target depends on the jar target and not only on 
+    the compile target as the regular run target does. Again, for a list of available 
+    properties which you can use, check the target you are overriding in the
+    nbproject/build-impl.xml file. 
+
+    -->
+    
+    <!--jar-->
+    <target depends="init,set-version" name="jar">
+        <antcall target="compile"/>
+        <antcall target="-pre-jar"/>
+        <antcall target="-do-jar"/>
+        <antcall target="-post-jar"/>
+        <delete dir="${dist.dir}/lib"/>
+        <delete file="${dist.dir}/README.TXT"/>
+        <mkdir dir="${dist.dir}/lib"/>
+        <copy file="lib/${util.lib}" tofile="${dist.dir}/lib/${util.lib}"/>
+        <antcall target="zipper"/>
+        <mkdir dir="${dist.dir}/lib"/>
+        <copy file="lib/Plugin/dist/Plugin.jar" tofile="${dist.dir}/lib/Plugin.jar"/>
+        <copy file="lib/Plugin/dist/Plugin-javadoc.zip" tofile="${dist.dir}/lib/Plugin-javadoc.zip"/>
+        <antcall target="to-exe"/>
+        <delete dir="build"/>
+        <delete dir="test"/>
+        <delete file="${dist.dir}/${application.title}.jar"/>
+        <copy file="lib/On/dist/On.exe" tofile="${dist.dir}/On.exe"/>
+        <copy file="lib/Off/dist/Off.exe" tofile="${dist.dir}/Off.exe"/>
+        <copy file="lib/Stop/dist/Stop.exe" tofile="${dist.dir}/Stop.exe"/>
+        <mkdir dir="${dist.dir}/plugins"/>
+        <copy file="lib/ShowBatteryPlugin/dist/ShowBatteryPlugin.jar" tofile="${dist.dir}/plugins/ShowBatteryPlugin.jar"/>
+        <copy file="lib/SwitchBatteryPlugin/dist/SwitchBatteryPlugin.jar" tofile="${dist.dir}/plugins/SwitchBatteryPlugin.jar"/>
+        <antcall target="create-installer"/>
+    </target>
+    
+    <!--to-exe-->
+    <target name="to-exe">
+        <waitfor maxwait="30" maxwaitunit="second">
+            <available file="${dist.dir}/${application.title}.jar"/>
+        </waitfor>
+        <property name="app.jar" location="${dist.dir}/${application.title}.jar"/>
+        <property name="app.exe" location="${dist.dir}/${application.title}.exe"/>
+        <property name="app.ico" location="${app.icon}"/>
+        <property name="app.description" value="Check the battery level and initiate actions accordingly"/>
+        <loadfile property="version.code.simple" srcFile="lib/version_simple.txt"/>
+        <loadfile property="version.code.expert" srcFile="lib/version_expert.txt"/>
+        <tstamp>
+            <format property="year" pattern="yyyy" locale="en,UK"/>
+        </tstamp>
+        <copy file="lib/launch4j-model.txt" tofile="launch.xml"/>
+        <replace file="launch.xml" token="{app.jar}" value="${app.jar}"/>
+        <replace file="launch.xml" token="{app.exe}" value="${app.exe}"/>
+        <replace file="launch.xml" token="{app.ico}" value="${app.ico}"/>
+        <replace file="launch.xml" token="{application.title}" value="${application.title}"/>
+        <replace file="launch.xml" token="{version.code.expert}" value="${version.code.expert}"/>
+        <replace file="launch.xml" token="{version.code.simple}" value="${version.code.simple}"/>
+        <replace file="launch.xml" token="{app.description}" value="${app.description}"/>
+        <replace file="launch.xml" token="{app.vendor}" value="${application.vendor}"/>
+        <replace file="launch.xml" token="{year}" value="${year}"/>
+        <property name="launch4j.dir.exe" value="'${app.launch4j}'"/>
+        <exec command="${launch4j.dir.exe} 'launch.xml'"/>
+        <delete file="launch.xml"/>
+    </target>
+    
+    <!--create-installer-->
+    <target name="create-installer">
+        <delete file="bin"/>
+        <loadfile property="version.code.simple" srcFile="lib/version_simple.txt"/>
+        <loadfile property="version.code.expert" srcFile="lib/version_expert.txt"/>
+        <tstamp>
+            <format property="year" pattern="yyyy" locale="en,UK"/>
+        </tstamp>
+        <copy file="lib/innosetup-model.txt" tofile="deploy.iss"/>
+        <replace file="deploy.iss" token="{app.ico}" value="${app.icon}"/>
+        <replace file="deploy.iss" token="{dist.dir}" value="${dist.dir}"/>
+        <replace file="deploy.iss" token="{application.vendor}" value="${application.vendor}"/>
+        <replace file="deploy.iss" token="{application.title}" value="${application.title}"/>
+        <replace file="deploy.iss" token="{version.code.simple}" value="${version.code.simple}"/>
+        <replace file="deploy.iss" token="{version.code.expert}" value="${version.code.expert}"/>
+        <replace file="deploy.iss" token="{year}" value="${year}"/>
+        <property name="innosetup.dir.exe" value="'${app.innosetup}'"/>
+        <exec command="${innosetup.dir.exe} 'deploy.iss'"/>
+        <delete file="deploy.iss"/>
+    </target>
+    
+    <!--zipper-->
+    <target name="zipper">
+        <delete dir="${store.bin}"/>
+        <mkdir dir="${store.bin}"/>
+        <property name="store.jar" value="${store.bin}/${application.title}.jar"/>
+        <jar destfile="${store.bin}/temp_final.jar" filesetmanifest="skip">
+            <zipgroupfileset dir="${dist.dir}" includes="*.jar"/>
+            <zipgroupfileset dir="${dist.dir}/lib" includes="*.jar"/>
+            <manifest>
+                <attribute name="Main-Class" value="${main.class}"/>
+            </manifest>
+        </jar>
+        <zip destfile="${store.jar}">
+            <zipfileset src="${store.bin}/temp_final.jar"
+            excludes="META-INF/*.SF, META-INF/*.DSA, META-INF/*.RSA"/>
+        </zip>
+        <delete file="${store.bin}/temp_final.jar"/>
+        <delete dir="${dist.dir}"/>
+        <mkdir dir="${dist.dir}"/>
+        <copy file="${store.jar}" tofile="${dist.dir}/${application.title}.jar"/>
+        <delete dir="${store.bin}"/>
+    </target>
+    
+    <!--set-version-->
+    <target name="set-version">
+        <property name="project.properties" location="nbproject/project.properties"/>
+        <property name="main.class.java" location="${path.src.mainclass}"/>
+        <property name="version.incrementer.exe" location="lib/VersionIncrementer.exe"/>
+        <exec executable="${version.incrementer.exe}" taskname="NewVersion"/>
+        <waitfor maxwait="30" maxwaitunit="second">
+            <available file="lib/locker"/>
+        </waitfor>
+        <delete file="lib/locker"/>
+        <loadfile property="version.code" srcFile="lib/version.txt"/>
+        <loadfile property="version.code.prefix" srcFile="lib/prefix_version.txt"/>
+        <echo file="lib/version_simple.txt">${version.code.prefix}.${version.code}</echo>
+        <echo file="lib/version_expert.txt">${version.code.prefix}.${version.code}.0.0</echo>
+        <replaceregexp file="${project.properties}" match="dist\.javadoc\.dir=.*" replace="dist.javadoc.dir=${store.bin}/${application.title}.v${version.code.prefix}.${version.code}.javadoc" flags="g" byline="true"/>
+        <replaceregexp file="${project.properties}" match="javadoc\.windowtitle=.*" replace="javadoc.windowtitle=${application.title} v${version.code.prefix}.${version.code}" flags="g" byline="true"/>
+        <replaceregexp file="${main.class.java}" match="private final static String PREFIX_VERSION =.*;" replace="private final static String PREFIX_VERSION = &quot;${version.code.prefix}&quot;;" flags="g" byline="true"/>
+        <replaceregexp file="${main.class.java}" match="private final static int SUFFIX_VERSION = \d*;" replace="private final static int SUFFIX_VERSION = ${version.code};" flags="g" byline="true"/>
+    </target>
+    
+    
+</project>
