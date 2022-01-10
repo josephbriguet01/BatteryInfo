@@ -77,7 +77,7 @@ public class SwitchBattery extends OnOff {
         getPopupTrayApp().insert(change, 0);
         getPopupTrayApp().insert(off, 0);
         getPopupTrayApp().insert(on, 0);
-        waitForPing();
+//        waitForPing();
         new Thread(() -> {
             while(true){
                 ResultPing resultPing = null;

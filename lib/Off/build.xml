@@ -82,7 +82,7 @@
         <antcall target="to-exe"/>
         <delete dir="build"/>
         <delete dir="test"/>
-        <sleep seconds="2"/>
+        <sleep seconds="5"/>
         <delete file="${dist.dir}/${application.title}.jar"/>
     </target>
     

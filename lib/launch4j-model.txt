@@ -38,8 +38,6 @@
     <companyName></companyName>
     <internalName>{application.title}</internalName>
     <originalFilename>{application.title}.exe</originalFilename>
-    <trademarks></trademarks>
-    <language>ENGLISH_US</language>
   </versionInfo>
   <messages>
     <startupErr>An error occurred while starting the application.</startupErr>

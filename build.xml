@@ -81,6 +81,7 @@
         <delete file="${dist.dir}/README.TXT"/>
         <mkdir dir="${dist.dir}/lib"/>
         <copy file="lib/${util.lib}" tofile="${dist.dir}/lib/${util.lib}"/>
+        <copy file="lib/Plugin/dist/Plugin.jar" tofile="${dist.dir}/lib/Plugin.jar"/>
         <antcall target="zipper"/>
         <mkdir dir="${dist.dir}/lib"/>
         <copy file="lib/Plugin/dist/Plugin.jar" tofile="${dist.dir}/lib/Plugin.jar"/>
@@ -143,6 +144,7 @@
         <replace file="deploy.iss" token="{version.code.simple}" value="${version.code.simple}"/>
         <replace file="deploy.iss" token="{version.code.expert}" value="${version.code.expert}"/>
         <replace file="deploy.iss" token="{year}" value="${year}"/>
+        <!--<replace file="deploy.iss" token="{util.lib}" value="${util.lib}"/>-->
         <property name="innosetup.dir.exe" value="'${app.innosetup}'"/>
         <exec command="${innosetup.dir.exe} 'deploy.iss'"/>
         <delete file="deploy.iss"/>
@@ -157,6 +159,7 @@
             <zipgroupfileset dir="${dist.dir}" includes="*.jar"/>
             <zipgroupfileset dir="${dist.dir}/lib" includes="*.jar"/>
             <manifest>
+                <!--<attribute name="Class-Path" value="lib/Plugin.jar"/>-->
                 <attribute name="Main-Class" value="${main.class}"/>
             </manifest>
         </jar>

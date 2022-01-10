@@ -93,6 +93,11 @@ public class BatteryInfo {
     static Properties properties;
     
     /**
+     * Correspond à l'icône dans le systray
+     */
+    private static java.awt.TrayIcon trayIcon;
+    
+    /**
      * Correspond à l'état de la batterie avant le dernier arrêt de l'ordinateur
      */
     private static Boolean hasCharging;
@@ -150,14 +155,14 @@ public class BatteryInfo {
         
         createSysTray();
         
-        System.out.println(String.format("Launching %s (%s)...", NAME_APP, VERSION_APP));
+        System.out.println(String.format("Launching %s (v%s)...", NAME_APP, VERSION_APP));
         
         java.io.File datasFolder = new java.io.File(PATH_DATAS_APP);
         if(!datasFolder.exists())
             datasFolder.mkdir();
         
-        loadPlugin();
         loadProperties();
+        loadPlugin();
         
         new Thread(() -> {
             while(true){
@@ -300,6 +305,7 @@ public class BatteryInfo {
             percent      = infos.getPercent();
             lifeTime     = infos.getLifeTime();
             fullLifeTime = infos.getFullLifeTime();
+            trayIcon.setToolTip(NAME_APP + " " + percent + " %" + ((power) ? " (Charging)" : ""));
             for (OnOff plugin : plugins)
                 plugin.onChange(power, percent, lifeTime, fullLifeTime);
         }
@@ -310,7 +316,6 @@ public class BatteryInfo {
      * Crée le systray de l'application
      */
     private static void createSysTray(){
-        java.awt.TrayIcon trayIcon;
         if (java.awt.SystemTray.isSupported()) {
             // get the SystemTray instance
             java.awt.SystemTray tray = java.awt.SystemTray.getSystemTray();
