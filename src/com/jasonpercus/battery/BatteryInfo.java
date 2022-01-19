@@ -50,7 +50,7 @@ public class BatteryInfo {
     /**
      * Correspond au suffix de la version de l'application
      */
-    private final static int SUFFIX_VERSION = 0;
+    private final static int SUFFIX_VERSION = 1;
     
     /**
      * Correspond à la version de l'application

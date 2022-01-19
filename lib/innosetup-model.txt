@@ -57,14 +57,13 @@ Source: "{#DistDir}\plugins\SwitchBatteryPlugin.jar"; DestDir: "{app}\plugins"; 
 Source: "{#DistDir}\Off.exe"; DestDir: "{app}"; Flags: ignoreversion; Components: SwitchBatteryPlugin
 Source: "{#DistDir}\On.exe"; DestDir: "{app}"; Flags: ignoreversion; Components: SwitchBatteryPlugin
 Source: "{#DistDir}\Stop.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "launch.bat"; DestDir: "{app}"; Flags: ignoreversion
 Source: "battery.json"; DestDir: "{localappdata}\{#MyAppName}"; Flags: ignoreversion
 Source: "ip_plug.txt"; DestDir: "{localappdata}\{#MyAppName}"; Flags: ignoreversion; Components: SwitchBatteryPlugin
 
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Registry]
-Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueType: string; ValueName: "{#MyAppName}"; ValueData: """{app}\launch.bat"" startup"; Flags: uninsdeletevalue
+Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueType: string; ValueName: "{#MyAppName}"; ValueData: """{app}\{#MyAppExeName}"" startup"; Flags: uninsdeletevalue
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
@@ -75,7 +74,7 @@ Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
 
 [Run]
 Filename: {tmp}\java16.exe; Parameters: "/lang=1036 /s /v""/qb! IEXPLORER=1 MOZILLA=1 REBOOT=Suppress JAVAUPDATE=0 WEBSTARTICON=0 SYSTRAY=0"""; WorkingDir: {tmp}; Flags: skipifdoesntexist; Check: NeedInstalljava
-Filename: "{app}\launch.bat"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
 
 [CODE]
 var

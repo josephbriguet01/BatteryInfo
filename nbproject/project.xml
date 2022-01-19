@@ -45,6 +45,14 @@
                 <id>jar</id>
             </reference>
             <reference>
+                <foreign-project>Stop</foreign-project>
+                <artifact-type>jar</artifact-type>
+                <script>build.xml</script>
+                <target>jar</target>
+                <clean-target>clean</clean-target>
+                <id>jar</id>
+            </reference>
+            <reference>
                 <foreign-project>SwitchBatteryPlugin</foreign-project>
                 <artifact-type>jar</artifact-type>
                 <script>build.xml</script>
